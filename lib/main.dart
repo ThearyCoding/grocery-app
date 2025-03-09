@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'pages/main_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/splash_page.dart';
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SignupPage(),
+      home: MainPage(),
       theme: ThemeData(
         fontFamily: 'Gilroy'
       ),

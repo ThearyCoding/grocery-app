@@ -32,6 +32,9 @@ flutter:
     - assets/fonts/
     - assets/images/
     - assets/fonts/gilroy/
+    - assets/images/grocery_images/
+    - assets/images/categories_images/
+    - assets/images/beverages_images/
 
   fonts:
     - family: Gilroy
