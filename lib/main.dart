@@ -17,7 +17,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: MainPage(),
       theme: ThemeData(
-        fontFamily: 'Gilroy'
+        fontFamily: 'Gilroy',
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0
+        )
       ),
     );
   }

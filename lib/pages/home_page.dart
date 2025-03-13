@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grocery_app/core/app_colors.dart';
 import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/widgets/grocery_card_item_widget.dart';
+import 'package:grocery_app/widgets/search_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,7 +36,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 15,
                   ),
-                  _searchWidget(),
+                  SearchWidget(),
                   _bannerWidget(),
                   SizedBox(
                     height: 5,
@@ -115,60 +117,7 @@ class _HomePageState extends State<HomePage> {
               ),
           itemCount: items.length,
           itemBuilder: (context, index) {
-            return Container(
-              padding: EdgeInsets.all(10),
-              width: 180,
-              height: 250,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Color(0xffE2E2E2))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Center(
-                    child: Image.asset(height: 150, items[index].imagePath),
-                  )),
-                  Text(
-                    items[index].name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    items[index].description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF7C7C7C),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '\$${items[index].price.toStringAsFixed(2)}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: AppColors.primaryColor),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ))
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  )
-                ],
-              ),
-            );
+            return GroceryCardItemWidget(item: items[index]);
           }),
     );
   }
@@ -228,24 +177,6 @@ class _HomePageState extends State<HomePage> {
               fontWeight: FontWeight.w600),
         )
       ],
-    );
-  }
-
-  Widget _searchWidget() {
-    return Container(
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-          color: Color(0xFFF2F3F2), borderRadius: BorderRadius.circular(15)),
-      child: Row(
-        spacing: 15,
-        children: [
-          SvgPicture.asset('assets/icons/search_icon.svg'),
-          Text(
-            'Search Store',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          )
-        ],
-      ),
     );
   }
 
