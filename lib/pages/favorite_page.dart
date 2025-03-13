@@ -26,59 +26,62 @@ class _FavoritePageState extends State<FavoritePage> {
           child: Column(
             children: [
               Divider(),
-              ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (_, index) {
-                    return Container(
-                      height: 100,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(15),
-                      width: double.infinity,
-                      child: Row(
-                        children: [
-                          Image.asset(beverages[index].imagePath),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    beverages[index].name,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  ),
-                                  Text(
-                                    beverages[index].description,
-                                    style: TextStyle(fontSize: 14,color:Colors.black87),
-                                  ),
-                                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (_, index) {
+                      return Container(
+                        height: 100,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(15),
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Image.asset(beverages[index].imagePath),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      beverages[index].name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    Text(
+                                      beverages[index].description,
+                                      style: TextStyle(fontSize: 14,color:Colors.black87),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Row(
-                            spacing: 10,
-                            children: [
-                              Text(
-                                "\$${beverages[index].price.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 17),
-                              ),
-                              Icon(Icons.arrow_forward_ios)
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                  separatorBuilder: (_, index) => Padding(
-                        padding: EdgeInsets.all(15),
-                        child: Divider(),
-                      ),
-                  itemCount: beverages.length),
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Text(
+                                  "\$${beverages[index].price.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600, fontSize: 17),
+                                ),
+                                Icon(Icons.arrow_forward_ios)
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, index) => Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Divider(),
+                        ),
+                    itemCount: beverages.length),
+              ),
             ],
           ),
         ),
@@ -97,7 +100,7 @@ class _FavoritePageState extends State<FavoritePage> {
                   onPressed: () {},
                   child: Text(
                     "Add all to cart",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: Colors.white, fontSize: 18,fontWeight: FontWeight.w600),
                   ))),
         ));
   }

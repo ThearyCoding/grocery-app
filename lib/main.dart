@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/app_colors.dart';
 import 'pages/main_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/splash_page.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       home: MainPage(),
       theme: ThemeData(
         fontFamily: 'Gilroy',
+          visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,

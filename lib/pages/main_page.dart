@@ -30,72 +30,83 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey
-            )
-          ]
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: BottomNavigationBar(
-            elevation: 6,
-            backgroundColor: Colors.white,
-            type: BottomNavigationBarType.fixed,
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              currentIndex: currentIndex,
-              selectedItemColor: AppColors.primaryColor,
-              selectedLabelStyle: TextStyle(
-                color: AppColors.primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedItemColor: Colors.black,
-              items: [
-                BottomNavigationBarItem(
-                    label: 'Shop',
-                    icon: SvgPicture.asset(
-                        color: currentIndex == 0
-                            ? AppColors.primaryColor
-                            : Colors.black,
-                        'assets/icons/shop_icon.svg')),
-                BottomNavigationBarItem(
-                    label: 'Explore',
-                    icon: SvgPicture.asset(
-                        color: currentIndex == 1
-                            ? AppColors.primaryColor
-                            : Colors.black,
-                        'assets/icons/explore_icon.svg')),
-                BottomNavigationBarItem(
-                    label: 'Cart',
-                    icon: SvgPicture.asset(
-                        color: currentIndex == 2
-                            ? AppColors.primaryColor
-                            : Colors.black,
-                        'assets/icons/cart_icon.svg')),
-                BottomNavigationBarItem(
-                    label: 'Favorite',
-                    icon: SvgPicture.asset(
-                        color: currentIndex == 3
-                            ? AppColors.primaryColor
-                            : Colors.black,
-                        'assets/icons/favourite_icon.svg')),
-                BottomNavigationBarItem(
-                    label: 'Account',
-                    icon: SvgPicture.asset(
-                        color: currentIndex == 4
-                            ? AppColors.primaryColor
-                            : Colors.black,
-                        'assets/icons/account_icon.svg'))
-              ]),
+            color: Colors.white, boxShadow: [BoxShadow(color: Colors.grey)]),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(15),
+              topLeft: Radius.circular(15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black38.withValues(alpha: .1),
+                  spreadRadius: 0,
+                  blurRadius: 37,
+                  offset: Offset(0, -12)),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
+            ),
+            child: BottomNavigationBar(
+                backgroundColor: Colors.white,
+                type: BottomNavigationBarType.fixed,
+                onTap: (index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                currentIndex: currentIndex,
+                selectedItemColor: AppColors.primaryColor,
+                selectedLabelStyle: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedItemColor: Colors.black,
+                items: [
+                  BottomNavigationBarItem(
+                      label: 'Shop',
+                      icon: SvgPicture.asset(
+                          color: currentIndex == 0
+                              ? AppColors.primaryColor
+                              : Colors.black,
+                          'assets/icons/shop_icon.svg')),
+                  BottomNavigationBarItem(
+                      label: 'Explore',
+                      icon: SvgPicture.asset(
+                          color: currentIndex == 1
+                              ? AppColors.primaryColor
+                              : Colors.black,
+                          'assets/icons/explore_icon.svg')),
+                  BottomNavigationBarItem(
+                      label: 'Cart',
+                      icon: SvgPicture.asset(
+                          color: currentIndex == 2
+                              ? AppColors.primaryColor
+                              : Colors.black,
+                          'assets/icons/cart_icon.svg')),
+                  BottomNavigationBarItem(
+                      label: 'Favorite',
+                      icon: SvgPicture.asset(
+                          color: currentIndex == 3
+                              ? AppColors.primaryColor
+                              : Colors.black,
+                          'assets/icons/favourite_icon.svg')),
+                  BottomNavigationBarItem(
+                      label: 'Account',
+                      icon: SvgPicture.asset(
+                          color: currentIndex == 4
+                              ? AppColors.primaryColor
+                              : Colors.black,
+                          'assets/icons/account_icon.svg'))
+                ]),
+          ),
         ),
       ),
     );

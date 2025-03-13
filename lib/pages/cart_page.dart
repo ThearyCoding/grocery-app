@@ -31,7 +31,7 @@ class _CartPageState extends State<CartPage> {
                   return Container(
                     width: double.infinity,
                     height: 150,
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(20),
                     child: Row(
                       children: [
                         Image.asset(
@@ -130,12 +130,16 @@ class _CartPageState extends State<CartPage> {
                   icon: Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
+
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.green.shade600),
                     child: Text("\$35.35",style: TextStyle(
                       color: Colors.white,
                     ),)),
                   style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                       backgroundColor: AppColors.primaryColor),
                   onPressed: () {},
                   label: Text(
