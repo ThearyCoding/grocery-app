@@ -95,7 +95,7 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ),
           SizedBox(
-            height: 15,
+            height: 20,
           ),
           Divider(),
           ListView.separated(

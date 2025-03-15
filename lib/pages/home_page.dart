@@ -5,6 +5,8 @@ import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/widgets/grocery_card_item_widget.dart';
 import 'package:grocery_app/widgets/search_widget.dart';
 
+import 'detail_product_page.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -107,7 +109,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _itemsWidget(List<GroceryItem> items) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 250,
       child: ListView.separated(
@@ -117,7 +119,9 @@ class _HomePageState extends State<HomePage> {
               ),
           itemCount: items.length,
           itemBuilder: (context, index) {
-            return GroceryCardItemWidget(item: items[index]);
+            return GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DetailProductPage(item: items[index],))),
+              child: GroceryCardItemWidget(item: items[index]));
           }),
     );
   }

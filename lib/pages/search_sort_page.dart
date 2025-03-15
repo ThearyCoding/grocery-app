@@ -13,9 +13,6 @@ class _SearchSortPageState extends State<SearchSortPage> {
   final TextEditingController searchController = TextEditingController();
 
   void onSearch(String query) {
-    final groceryItems = items.where((grocery) {
-      return grocery.name.toLowerCase().contains(query.toLowerCase());
-    });
   }
 
   @override

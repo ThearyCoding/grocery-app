@@ -15,7 +15,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int currentIndex = 0;
+  final ValueNotifier<int> _currentIndex = ValueNotifier<int>(0);
   final List<Widget> _pages = [
     HomePage(),
     ExplorePage(),
@@ -23,90 +23,70 @@ class _MainPageState extends State<MainPage> {
     FavoritePage(),
     AccountPage()
   ];
+
+  @override
+  void dispose() {
+    _currentIndex.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[currentIndex],
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            color: Colors.white, boxShadow: [BoxShadow(color: Colors.grey)]),
-        child: Container(
+      body: ValueListenableBuilder<int>(
+        valueListenable: _currentIndex,
+        builder: (context, index, _) => _pages[index],
+      ),
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _currentIndex,
+        builder: (context, index, _) => Container(
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(15),
-              topLeft: Radius.circular(15),
-            ),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black38.withValues(alpha: .1),
-                  spreadRadius: 0,
-                  blurRadius: 37,
-                  offset: Offset(0, -12)),
-            ],
+            color: Colors.white,
+            boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1))],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(15),
               topRight: Radius.circular(15),
             ),
             child: BottomNavigationBar(
-                backgroundColor: Colors.white,
-                type: BottomNavigationBarType.fixed,
-                onTap: (index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                currentIndex: currentIndex,
-                selectedItemColor: AppColors.primaryColor,
-                selectedLabelStyle: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedItemColor: Colors.black,
-                items: [
-                  BottomNavigationBarItem(
-                      label: 'Shop',
-                      icon: SvgPicture.asset(
-                          color: currentIndex == 0
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                          'assets/icons/shop_icon.svg')),
-                  BottomNavigationBarItem(
-                      label: 'Explore',
-                      icon: SvgPicture.asset(
-                          color: currentIndex == 1
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                          'assets/icons/explore_icon.svg')),
-                  BottomNavigationBarItem(
-                      label: 'Cart',
-                      icon: SvgPicture.asset(
-                          color: currentIndex == 2
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                          'assets/icons/cart_icon.svg')),
-                  BottomNavigationBarItem(
-                      label: 'Favorite',
-                      icon: SvgPicture.asset(
-                          color: currentIndex == 3
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                          'assets/icons/favourite_icon.svg')),
-                  BottomNavigationBarItem(
-                      label: 'Account',
-                      icon: SvgPicture.asset(
-                          color: currentIndex == 4
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                          'assets/icons/account_icon.svg'))
-                ]),
+              backgroundColor: Colors.white,
+              type: BottomNavigationBarType.fixed,
+              onTap: (newIndex) => _currentIndex.value = newIndex,
+              currentIndex: index,
+              selectedItemColor: AppColors.primaryColor,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedItemColor: Colors.black,
+              items: [
+                _buildNavItem('Shop', 'assets/icons/shop_icon.svg', 0, index),
+                _buildNavItem('Explore', 'assets/icons/explore_icon.svg', 1, index),
+                _buildNavItem('Cart', 'assets/icons/cart_icon.svg', 2, index),
+                _buildNavItem('Favorite', 'assets/icons/favourite_icon.svg', 3, index),
+                _buildNavItem('Account', 'assets/icons/account_icon.svg', 4, index),
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(String label, String asset, int itemIndex, int currentIndex) {
+    return BottomNavigationBarItem(
+      label: label,
+      icon: SvgPicture.asset(
+        asset,
+        height: 24,
+        colorFilter: ColorFilter.mode(
+          itemIndex == currentIndex ? AppColors.primaryColor : Colors.black,
+          BlendMode.srcIn,
         ),
       ),
     );
