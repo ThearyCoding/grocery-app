@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: SplashPage(),
       theme: ThemeData(
         fontFamily: 'Gilroy',
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -22,6 +22,21 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffE2E2E2))
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Color(0xffE2E2E2)
+            )
+          ),
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Color(0xffE2E2E2)
+            )
+          )
         )
       ),
     );

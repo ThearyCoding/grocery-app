@@ -1,5 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/pages/selected_location_page.dart';
+import 'package:grocery_app/widgets/custom_button.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -39,12 +41,22 @@ class _AuthPageState extends State<AuthPage> {
               onChanged: (value) {},
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22),
-            child: Divider(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomButton(
+                label: "Login wiht Phone",
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => SelectedLocationPage()))),
           ),
           SizedBox(
             height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            child: Divider(),
           ),
           Align(
             child: Padding(
