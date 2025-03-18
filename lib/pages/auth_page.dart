@@ -1,5 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/pages/main_page.dart';
 import 'package:grocery_app/pages/selected_location_page.dart';
 import 'package:grocery_app/widgets/custom_button.dart';
 
@@ -84,7 +85,7 @@ class _AuthPageState extends State<AuthPage> {
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(17))),
-                onPressed: () {},
+                onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (_) => MainPage())),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(

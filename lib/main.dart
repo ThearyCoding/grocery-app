@@ -37,6 +37,9 @@ class MyApp extends StatelessWidget {
               color: Color(0xffE2E2E2)
             )
           )
+        ),
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: Colors.transparent
         )
       ),
     );
