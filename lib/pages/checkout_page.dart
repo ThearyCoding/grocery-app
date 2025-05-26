@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_app/models/grocery_item.dart';
+import 'package:get/get.dart';
+import 'package:grocery_app/controllers/cart_controller.dart';
+import 'package:grocery_app/core/app_colors.dart';
 import 'package:grocery_app/pages/order_accepted_page.dart';
 import 'package:grocery_app/widgets/custom_button.dart';
 
@@ -11,13 +13,8 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final List<Map<String, dynamic>> summaryItems = [
-    {"title": "Subtotal", "amount": 430.50},
-    {"title": "Shipping", "amount": 0.0, "editable": true},
-    {"title": "Estimated Taxes", "amount": 12.00},
-    {"title": "Others Fees", "amount": 0.00},
-    {"title": "Total", "amount": 442.50, "bold": true},
-  ];
+
+  final CartController cartController = Get.put(CartController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,68 +37,84 @@ class _CheckoutPageState extends State<CheckoutPage> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              ListView.separated(
-                  separatorBuilder: (context, index) => SizedBox(
-                        height: 15,
-                      ),
-                  itemCount: groceries.length,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Row(
-                      spacing: 15,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(color: Color(0xffF0F1F6)),
-                          child: Stack(
-                            clipBehavior: Clip.none,
+              Obx(() {
+                return cartController.isLoading.isTrue
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : ListView.separated(
+                        separatorBuilder: (context, index) => SizedBox(
+                              height: 15,
+                            ),
+                        itemCount: cartController.cart.value.items.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final item = cartController.cart.value.items[index];
+                          return Row(
+                            spacing: 15,
                             children: [
-                              Image.asset(
-                                  width: 150,
-                                  height: 150,
-                                  groceries[index].imagePath),
-                              Positioned(
-                                right: -5,
-                                child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xff727272),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: Text(
-                                    "1",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                groceries[index].name,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                ),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Image.network(
+                                      width: 150,
+                                      height: 150,
+                                      item.product!.images.first),
+                                  Positioned(
+                                    right: -5,
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          color: Color(0xff727272),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text(
+                                        item.quantity.toString(),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                              Text(groceries[index].description),
-                              Text(
-                                "\$${groceries[index].price.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              Expanded(
+                                child: Column(
+                                  spacing: 5,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.product!.name ?? "No name",
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      item.product!.unit ?? "No unit",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "\$${(item.quantity! * (item.product!.price ?? 0)).toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primaryColor),
+                                    )
+                                  ],
+                                ),
                               )
                             ],
-                          ),
-                        )
-                      ],
-                    );
-                  }),
+                          );
+                        });
+              }),
               SizedBox(
                 height: 20,
               ),
@@ -140,11 +153,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
               SizedBox(
                 height: 20,
               ),
-              ListView.builder(
+              Obx((){
+                return cartController.isLoading.isTrue ? SizedBox(): ListView.builder(
                 shrinkWrap: true,
-                itemCount: summaryItems.length,
+                itemCount: cartController.getSummaryItems().length,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
+                  final summaryItems = cartController.getSummaryItems()[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -154,20 +169,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           spacing: 10,
                           children: [
                             Text(
-                              summaryItems[index]["title"],
+                           summaryItems["title"],
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: summaryItems[index]["bold"] == true
+                                fontWeight: summaryItems["bold"] == true
                                     ? FontWeight.bold
                                     : FontWeight.normal,
                               ),
                             ),
-                            summaryItems[index]['title'] == 'Shipping'
+                        summaryItems['title'] == 'Shipping'
                                 ? Icon(Icons.local_shipping)
                                 : SizedBox.shrink()
                           ],
                         ),
-                        summaryItems[index]["editable"] == true
+                       summaryItems["editable"] == true
                             ? GestureDetector(
                                 onTap: () {},
                                 child: Text(
@@ -176,7 +191,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                               )
                             : Text(
-                                "\$${summaryItems[index]["amount"].toStringAsFixed(2)}",
+                                "\$${summaryItems['amount']}",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -186,7 +201,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                   );
                 },
-              )
+              );
+              })
             ],
           ),
         ),
@@ -196,7 +212,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
         margin: EdgeInsets.only(bottom: 5),
         width: double.infinity,
         height: 70,
-        child: CustomButton(label: "Order now", onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => OrderAcceptedPage()))),
+        child: CustomButton(
+            label: "Order now",
+            onPressed: () => Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => OrderAcceptedPage()))),
       ),
     );
   }

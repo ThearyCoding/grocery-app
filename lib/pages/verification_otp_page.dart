@@ -17,8 +17,7 @@ class _VerificationOtpPageState extends State<VerificationOtpPage> {
     // 2
     // 5
     // 1325
-    String otp = controllers.map((o) => o.text).join();
-    print("Entered opt: $otp");
+    //  String otp = controllers.map((o) => o.text).join();
   }
 
   @override

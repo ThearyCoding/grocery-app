@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/widgets/grocery_card_item_widget.dart';
+import 'package:get/get.dart';
+import 'package:grocery_app/controllers/product_controller.dart';
+import '../utils/debouncer.dart';
+import '../widgets/grocery_card_item_widget.dart';
 
 class SearchSortPage extends StatefulWidget {
   const SearchSortPage({super.key});
@@ -11,8 +13,19 @@ class SearchSortPage extends StatefulWidget {
 
 class _SearchSortPageState extends State<SearchSortPage> {
   final TextEditingController searchController = TextEditingController();
+  late Debouncer _debouncer;
 
-  void onSearch(String query) {
+  @override
+  void initState() {
+    super.initState();
+    _debouncer = Debouncer();
+  }
+
+  final productController = Get.put(ProductController());
+  void onSearch(String query) async {
+    _debouncer.run(() async {
+      await productController.searchSuggestion(productName: query);
+    });
   }
 
   @override
@@ -31,7 +44,7 @@ class _SearchSortPageState extends State<SearchSortPage> {
             onChanged: onSearch,
             controller: searchController,
             decoration: InputDecoration(
-              hintText: 'Search grocery',
+                hintText: 'Search grocery',
                 prefixIcon: Icon(
                   Icons.search,
                   color: Colors.black54,
@@ -54,18 +67,27 @@ class _SearchSortPageState extends State<SearchSortPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: GridView.builder(
-            itemCount: items.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 0.8,
-                crossAxisCount: 2),
-            itemBuilder: (context, index) {
-              return GroceryCardItemWidget(item: items[index]);
-            }),
-      ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Obx(() {
+            final suggestions = productController.suggestions;
+            final isLoading = productController.isLoadingSuggestion.isTrue;
+            return isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : GridView.builder(
+                    itemCount: suggestions.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 0.8,
+                        crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      return GroceryCardItemWidget(
+                        product: suggestions[index],
+                      );
+                    });
+          })),
     );
   }
 }

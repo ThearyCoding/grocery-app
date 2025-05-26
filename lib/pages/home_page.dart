@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grocery_app/controllers/product_controller.dart';
 import 'package:grocery_app/core/app_colors.dart';
-import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/models/category.dart';
+import 'package:grocery_app/models/product.dart';
 import 'package:grocery_app/widgets/grocery_card_item_widget.dart';
+import 'package:grocery_app/widgets/loading-widget/loading_card_widget.dart';
+import 'package:grocery_app/widgets/loading-widget/loading_feature_widget.dart';
+import 'package:grocery_app/widgets/loading-widget/loading_header_widget.dart';
 import 'package:grocery_app/widgets/search_widget.dart';
-
-import 'detail_product_page.dart';
+import 'package:get/get.dart';
+import '../controllers/category_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +20,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ProductController productController = Get.put(ProductController());
+  final categoryController = Get.put(CategoryController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,79 +30,104 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                      child:
-                          SvgPicture.asset('assets/icons/app_icon_color.svg')),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  _headerWidget(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  SearchWidget(),
-                  _bannerWidget(),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  _headerExclusiveWidget('Exclusive Offer'),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _itemsWidget(exclusiveOffers),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _headerExclusiveWidget('Best Selling'),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _itemsWidget(bestSelling),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _headerExclusiveWidget('Groceries'),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _itemsGrocery(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _itemsWidget(groceries),
-                ],
+              physics: BouncingScrollPhysics(),
+              child: Obx(
+                () => Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                        child: SvgPicture.asset(
+                            'assets/icons/app_icon_color.svg')),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    _headerWidget(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    SearchWidget(),
+                    _bannerWidget(),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    productController.isLoadingNewest.isTrue
+                        ? LoadingHeaderWidget()
+                        : _headerExclusiveWidget('Exclusive Offer'),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    productController.isLoadingExclusive.value
+                        ? LoadingCardWidget()
+                        : _itemsWidget(productController.productsExclusive),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    productController.isLoadingNewest.isTrue
+                        ? LoadingHeaderWidget()
+                        : _headerExclusiveWidget('Best Selling'),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    productController.isLoadingBestSelling.value
+                        ? LoadingCardWidget()
+                        : _itemsWidget(productController.productsBestSelling),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    productController.isLoadingNewest.isTrue
+                        ? LoadingHeaderWidget()
+                        : _headerExclusiveWidget('Groceries'),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    categoryController.isLoading.isTrue
+                        ? LoadingFeatureWidget()
+                        : _featureItems(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    productController.isLoadingBestSelling.value
+                        ? LoadingCardWidget()
+                        : _itemsWidget(productController.productNewest),
+                  ],
+                ),
               ),
             ),
           ),
         ));
   }
 
-  Widget _itemsGrocery() {
+  Widget _featureItems() {
     return SizedBox(
       height: 120,
       width: double.infinity,
       child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
+            final category = categoryController.categories[index];
             return Container(
               height: 120,
               width: 250,
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  color: Colors.orange.shade400.withOpacity(.24)),
+                  color: gridColors[index % gridColors.length]
+                      .withValues(alpha: 0.1)),
               child: Row(
                 spacing: 10,
                 children: [
-                  Image.asset('assets/images/pulses.png'),
-                  Text(
-                    'Pulses',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  Image.network(
+                      width: 80, fit: BoxFit.cover, category.image ?? ""),
+                  Expanded(
+                    child: Text(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      category.name ?? "No name provided",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
                   )
                 ],
               ),
@@ -104,11 +136,11 @@ class _HomePageState extends State<HomePage> {
           separatorBuilder: (context, index) => SizedBox(
                 width: 15,
               ),
-          itemCount: 5),
+          itemCount: categoryController.categories.length),
     );
   }
 
-  Widget _itemsWidget(List<GroceryItem> items) {
+  Widget _itemsWidget(List<Product> products) {
     return SizedBox(
       width: double.infinity,
       height: 250,
@@ -117,11 +149,9 @@ class _HomePageState extends State<HomePage> {
           separatorBuilder: (context, index) => SizedBox(
                 width: 15,
               ),
-          itemCount: items.length,
+          itemCount: products.length,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DetailProductPage(item: items[index],))),
-              child: GroceryCardItemWidget(item: items[index]));
+            return GroceryCardItemWidget(product: products[index]);
           }),
     );
   }

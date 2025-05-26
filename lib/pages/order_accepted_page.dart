@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:grocery_app/widgets/custom_button.dart';
 
 class OrderAcceptedPage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _OrderAcceptedPageState extends State<OrderAcceptedPage> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                     minimumSize: Size(double.infinity, 60)),
-                onPressed: () {},
+                onPressed: () => Get.back(),
                 child: Text(
                   "Back to home",
                   style: TextStyle(color: Colors.black, fontSize: 18),

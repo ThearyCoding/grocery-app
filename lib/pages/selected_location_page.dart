@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:grocery_app/pages/mobile_number_page.dart';
 import 'package:grocery_app/widgets/custom_button.dart';
 
@@ -91,7 +92,9 @@ class _SelectedLocationPageState extends State<SelectedLocationPage> {
                 SizedBox(
                   height: 35,
                 ),
-                CustomButton(label: "Sumbit", onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MobileNumberPage())))
+                CustomButton(
+                    label: "Sumbit",
+                    onPressed: () => Get.to(() => MobileNumberPage()))
               ],
             ),
           ],

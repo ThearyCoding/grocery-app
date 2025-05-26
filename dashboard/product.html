@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Product Management Panel</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/1.13.6/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      .product-img-container {
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .product-img {
+        max-height: 180px;
+        max-width: 100%;
+        object-fit: contain;
+      }
+      .badge-offer {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+      }
+      .navbar-brand {
+        font-weight: bold;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      .card-subtitle {
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+      .price-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .original-price {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+      .unit-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-store me-2"></i>Product Admin Panel
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="#" id="gridViewBtn">
+                <i class="fas fa-th me-1"></i> Grid View
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="tableViewBtn">
+                <i class="fas fa-table me-1"></i> Table View
+              </a>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <button class="btn btn-success" id="addProductBtn">
+              <i class="fas fa-plus me-1"></i> Add Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container my-4">
+      <!-- Dashboard stats -->
+      <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+          <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-box me-2"></i>Total Products
+              </h5>
+              <h2 id="totalProducts">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card bg-success text-white h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-tag me-2"></i>Active Offers
+              </h5>
+              <h2 id="activeOffers">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-exclamation-triangle me-2"></i>Low Stock
+              </h5>
+              <h2 id="lowStock">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card bg-info text-white h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-tags me-2"></i>Categories
+              </h5>
+              <h2 id="categories">0</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and filter -->
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              placeholder="Search products..."
+            />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <select class="form-select" id="categoryFilter">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <select class="form-select" id="sortBy">
+            <option value="name">Sort by Name</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="stock-low">Stock: Low to High</option>
+            <option value="newest">Newest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid view -->
+      <div id="gridView" class="row g-4">
+        <!-- Products will be loaded here -->
+      </div>
+
+      <!-- Table view (hidden by default) -->
+      <div id="tableView" class="row d-none">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table
+                  class="table table-striped table-hover"
+                  id="productsTable"
+                >
+                  <thead>
+                    <tr>
+                      <th>Image</th>
+                      <th>Name</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>SKU</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Table rows will be loaded here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <nav aria-label="Product pagination">
+            <ul class="pagination justify-content-center" id="pagination">
+              <!-- Pagination will be loaded here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div
+      class="modal fade"
+      id="editProductModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Product</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="editProductForm">
+              <input type="hidden" id="editProductId" />
+              <div class="row mb-3">
+                <div class="col-md-8">
+                  <div class="mb-3">
+                    <label for="editName" class="form-label"
+                      >Product Name</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="editName"
+                      required
+                    />
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="editPrice" class="form-label">Price</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="editPrice"
+                          step="0.01"
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="editStock" class="form-label">Stock</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="editStock"
+                        min="0"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="editCategory" class="form-label"
+                        >Category</label
+                      >
+                      <select class="form-select" id="editCategory" required>
+                        <!-- Categories will be loaded here -->
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="editUnit" class="form-label">Unit</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editUnit"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editSku" class="form-label">SKU</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="editSku"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3 text-center">
+                    <label class="form-label">Product Image</label>
+                    <div class="mb-2">
+                      <img
+                        id="editImagePreview"
+                        src=""
+                        class="img-fluid rounded"
+                        style="max-height: 150px"
+                      />
+                    </div>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editImageUrl"
+                        placeholder="Image URL"
+                      />
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="updateImageBtn"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="editActiveOffer"
+                    />
+                    <label class="form-check-label" for="editActiveOffer"
+                      >Active Offer</label
+                    >
+                  </div>
+                  <div id="offerOptions" class="d-none">
+                    <div class="mb-3">
+                      <label for="editDiscountPercent" class="form-label"
+                        >Discount %</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="editDiscountPercent"
+                        min="0"
+                        max="100"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editValidUntil" class="form-label"
+                        >Valid Until</label
+                      >
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="editValidUntil"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editBadgeText" class="form-label"
+                        >Badge Text</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editBadgeText"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="editDescription"
+                  rows="3"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="saveProductBtn">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">Confirm Delete</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this product?</p>
+            <p>
+              <strong>Product Name:</strong>
+              <span id="deleteProductName"></span>
+            </p>
+            <p><strong>SKU:</strong> <span id="deleteProductSku"></span></p>
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>This action cannot
+              be undone.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+              Delete Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div
+      class="modal fade"
+      id="addProductModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Product</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="addProductForm">
+              <div class="row mb-3">
+                <div class="col-md-8">
+                  <div class="mb-3">
+                    <label for="addName" class="form-label">Product Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="addName"
+                      required
+                    />
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="addPrice" class="form-label">Price</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="addPrice"
+                          step="0.01"
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="addStock" class="form-label">Stock</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="addStock"
+                        min="0"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="addCategory" class="form-label"
+                        >Category</label
+                      >
+                      <select class="form-select" id="addCategory" required>
+                        <!-- Categories will be loaded here -->
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="addUnit" class="form-label">Unit</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addUnit"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="addSku" class="form-label">SKU</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="addSku"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="addImageUrl" class="form-label"
+                      >Image URL</label
+                    >
+                    <input type="text" class="form-control" id="addImageUrl" />
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="addActiveOffer"
+                    />
+                    <label class="form-check-label" for="addActiveOffer"
+                      >Active Offer</label
+                    >
+                  </div>
+                  <div id="addOfferOptions" class="d-none">
+                    <div class="mb-3">
+                      <label for="addDiscountPercent" class="form-label"
+                        >Discount %</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="addDiscountPercent"
+                        min="0"
+                        max="100"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="addValidUntil" class="form-label"
+                        >Valid Until</label
+                      >
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="addValidUntil"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="addBadgeText" class="form-label"
+                        >Badge Text</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addBadgeText"
+                        value="Exclusive Offer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="addDescription" class="form-label"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="addDescription"
+                  rows="3"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-success" id="addNewProductBtn">
+              Add Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+      <div
+        id="toastNotification"
+        class="toast align-items-center text-white border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-check-circle me-2"></i
+            ><span id="toastMessage"></span>
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net/1.13.6/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/1.13.6/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+      // Global variables
+      let allProducts = [];
+      let categories = [];
+      let currentPage = 1;
+      let itemsPerPage = 10;
+      let filteredProducts = [];
+      let totalPages = 0;
+      let baseUrl = "https://grocery-api-s552.onrender.com";
+      let productTable;
+      let apiUrl = `${baseUrl}/api/products`;
+
+      $(document).ready(function () {
+        productTable = $("#productsTable").DataTable({
+          paging: false,
+          searching: false,
+          info: false,
+        });
+        loadCategories();
+        loadProducts();
+
+        // Event listeners
+        $("#gridViewBtn").click(function (e) {
+          e.preventDefault();
+          showGridView();
+        });
+
+        $("#tableViewBtn").click(function (e) {
+          e.preventDefault();
+          showTableView();
+        });
+
+        $("#searchInput").on("input", function () {
+          filterProducts();
+        });
+
+        $("#categoryFilter").change(function () {
+          filterProducts();
+        });
+
+        $("#sortBy").change(function () {
+          filterProducts();
+        });
+
+        $("#addProductBtn").click(function () {
+          populateCategoriesInModal("add");
+          $("#addProductModal").modal("show");
+        });
+
+        $("#editActiveOffer").change(function () {
+          toggleOfferOptions();
+        });
+
+        $("#addActiveOffer").change(function () {
+          toggleAddOfferOptions();
+        });
+
+        $("#updateImageBtn").click(function () {
+          let imageUrl = $("#editImageUrl").val();
+          if (imageUrl) {
+            $("#editImagePreview").attr("src", imageUrl);
+          }
+        });
+
+        $("#saveProductBtn").click(function () {
+          saveProduct();
+        });
+
+        $("#addNewProductBtn").click(function () {
+          addNewProduct();
+        });
+
+        $("#confirmDeleteBtn").click(function () {
+          deleteProduct();
+        });
+      });
+
+      // Load products from API
+      function loadProducts() {
+        $.ajax({
+          url: apiUrl,
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            if (response.success) {
+              allProducts = response.products;
+
+              //   // Extract categories
+              //   categories = new Set();
+              //   allProducts.forEach((product) => {
+              //     if (product.category && product.category.name) {
+              //       categories.add(product.category.name);
+              //     }
+              //   });
+
+              // Populate category filter
+              //   populateCategoryFilter();
+
+              // Update stats
+            
+              updateStats(response.totalProducts);
+
+              // Apply initial filter
+              filterProducts();
+
+              // Hide loading overlay
+              $("#loadingOverlay").fadeOut();
+            } else {
+              showToast("Error loading products", "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Failed to connect to the server", "bg-danger");
+            $("#loadingOverlay").fadeOut();
+          },
+        });
+      }
+
+      // Filter products based on search and category
+      function filterProducts() {
+        const searchTerm = $("#searchInput").val().toLowerCase();
+        const categoryFilter = $("#categoryFilter").val();
+        const sortBy = $("#sortBy").val();
+
+        // Send AJAX request to filter products
+        $.ajax({
+          url: `${baseUrl}/api/products?category=${categoryFilter}&search=${searchTerm}&sortBy=${sortBy}`, // Pass category and search term as query parameters
+          type: "GET",
+          success: function (response) {
+            if (response.success) {
+              allProducts = response.products; // Update the products list
+              totalPages = response.totalPages; // Total number of pages
+              filteredProducts = allProducts; // Filter products by search and category
+              sortProducts(sortBy); // Sort the products
+              renderGridView(); // Update the grid view
+              renderTableView(); // Update the table view
+              updatePagination(); // Update pagination
+            } else {
+              showToast("Error fetching products", "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Failed to fetch products", "bg-danger");
+          },
+        });
+      }
+
+      // Sort products based on selected option
+      function sortProducts(sortOption) {
+        switch (sortOption) {
+          case "name":
+            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+          case "price-low":
+            filteredProducts.sort((a, b) => a.currentPrice - b.currentPrice);
+            break;
+          case "price-high":
+            filteredProducts.sort((a, b) => b.currentPrice - a.currentPrice);
+            break;
+          case "stock-low":
+            filteredProducts.sort((a, b) => a.stock - b.stock);
+            break;
+          case "newest":
+            filteredProducts.sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            break;
+          default:
+            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+        }
+      }
+
+      // Render grid view
+      function renderGridView() {
+        const gridContainer = $("#gridView");
+        gridContainer.empty();
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(
+          startIndex + itemsPerPage,
+          filteredProducts.length
+        );
+
+        for (let i = startIndex; i < endIndex; i++) {
+          const product = filteredProducts[i];
+          const hasDiscount =
+            product.hasActiveOffer &&
+            product.exclusiveOffer.discountPercent > 0;
+
+          const card = `
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card product-card">
+                            ${
+                              product.hasActiveOffer
+                                ? `<div class="badge-offer">
+                                    <span class="badge ${
+                                      hasDiscount ? "bg-danger" : "bg-primary"
+                                    }">
+                                        ${product.exclusiveOffer.badgeText}
+                                    </span>
+                                </div>`
+                                : ""
+                            }
+                            <div class="product-img-container">
+                                <img src="${
+                                  product.images && product.images.length > 0
+                                    ? product.images[0]
+                                    : "/api/placeholder/200/200"
+                                }" 
+                                    class="product-img" alt="${product.name}">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <h6 class="card-subtitle mb-2">${
+                                  product.category
+                                    ? product.category.name
+                                    : "Uncategorized"
+                                }</h6>
+                                <div class="d-flex justify-content-between align-items-center my-2">
+                                    <div class="price-container">
+                                        <span class="fw-bold ${
+                                          hasDiscount ? "text-danger" : ""
+                                        }">$${product.currentPrice.toFixed(
+            2
+          )}</span>
+                                        ${
+                                          hasDiscount
+                                            ? `<span class="original-price">$${product.exclusiveOffer.originalPrice.toFixed(
+                                                2
+                                              )}</span>`
+                                            : ""
+                                        }
+                                        <span class="unit-text">/ ${
+                                          product.unit
+                                        }</span>
+                                    </div>
+                                    <span class="badge ${
+                                      product.stock > 20
+                                        ? "bg-success"
+                                        : "bg-warning text-dark"
+                                    }">
+                                        Stock: ${product.stock}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${
+                                      product._id
+                                    }">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${
+                                      product._id
+                                    }" 
+                                        data-name="${product.name}" data-sku="${
+            product.sku
+          }">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <small class="text-muted">SKU: ${
+                                  product.sku
+                                }</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+          gridContainer.append(card);
+        }
+
+        // Reattach event handlers
+        $(".edit-btn").click(function () {
+          const productId = $(this).data("id");
+          openEditModal(productId);
+        });
+
+        $(".delete-btn").click(function () {
+          const productId = $(this).data("id");
+          const productName = $(this).data("name");
+          const productSku = $(this).data("sku");
+          openDeleteModal(productId, productName, productSku);
+        });
+      }
+
+      // Render table view
+      function renderTableView() {
+        productTable.clear();
+
+        filteredProducts.forEach((product) => {
+          const hasDiscount =
+            product.hasActiveOffer &&
+            product.exclusiveOffer.discountPercent > 0;
+          const priceDisplay = hasDiscount
+            ? `<span class="text-danger">$${product.currentPrice.toFixed(
+                2
+              )}</span> 
+                     <span class="text-decoration-line-through text-muted">$${product.exclusiveOffer.originalPrice.toFixed(
+                       2
+                     )}</span>`
+            : `$${product.currentPrice.toFixed(2)}`;
+
+          productTable.row.add([
+            `<img src="${
+              product.images && product.images.length > 0
+                ? product.images[0]
+                : "/api/placeholder/50/50"
+            }" 
+                     class="img-thumbnail" style="height: 50px;" alt="${
+                       product.name
+                     }">`,
+            product.name,
+            product.category ? product.category.name : "Uncategorized",
+            priceDisplay +
+              ` <small class="text-muted">/ ${product.unit}</small>`,
+            `<span class="badge ${
+              product.stock > 20 ? "bg-success" : "bg-warning text-dark"
+            }">${product.stock}</span>`,
+            product.sku,
+            `<div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-btn" data-id="${product._id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger delete-btn" data-id="${product._id}" 
+                                data-name="${product.name}" data-sku="${product.sku}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>`,
+          ]);
+        });
+
+        productTable.draw();
+
+        // Reattach event handlers
+        $("#productsTable .edit-btn").click(function () {
+          const productId = $(this).data("id");
+          openEditModal(productId);
+        });
+
+        $("#productsTable .delete-btn").click(function () {
+          const productId = $(this).data("id");
+          const productName = $(this).data("name");
+          const productSku = $(this).data("sku");
+          openDeleteModal(productId, productName, productSku);
+        });
+      }
+
+      // Update pagination
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        const paginationContainer = $("#pagination");
+        paginationContainer.empty();
+
+        // Previous button
+        paginationContainer.append(`
+                <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                    <a class="page-link" href="#" data-page="${
+                      currentPage - 1
+                    }">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `);
+
+        // Page numbers
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, startPage + 4);
+
+        for (let i = startPage; i <= endPage; i++) {
+          paginationContainer.append(`
+                    <li class="page-item ${i === currentPage ? "active" : ""}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `);
+        }
+
+        // Next button
+        paginationContainer.append(`
+                <li class="page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }">
+                    <a class="page-link" href="#" data-page="${
+                      currentPage + 1
+                    }">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `);
+
+        // Attach event handlers
+        $(".page-link").click(function (e) {
+          e.preventDefault();
+          const newPage = $(this).data("page");
+          if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            renderGridView();
+            renderTableView();
+            updatePagination();
+          }
+        });
+      }
+      function loadCategories() {
+        $.ajax({
+          url: `${baseUrl}/api/categories`,
+          type: "GET",
+          dataType: "json",
+          success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200 && Array.isArray(response)) {
+              categories = response.map((cat) => ({
+                _id: cat._id,
+                name: cat.name,
+              }));
+
+              populateCategoryFilter();
+            } else {
+              showToast("Error loading categories", "bg-danger");
+            }
+            console.log("Categories loaded:", categories);
+          },
+          error: function () {
+            showToast("Failed to load categories", "bg-danger");
+          },
+        });
+      }
+
+      function populateCategoryFilter() {
+        const editCategorySelect = $("#editCategory");
+        const filterCategorySelect = $("#categoryFilter");
+
+        // Clear old options
+        editCategorySelect.empty();
+        filterCategorySelect.empty();
+
+        // Add default option
+        editCategorySelect.append('<option value="">Select Category</option>');
+        filterCategorySelect.append('<option value="">All Categories</option>');
+
+        // Sort and append category options
+        categories
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach((category) => {
+            const optionHTML = `<option value="${category._id}">${category.name}</option>`;
+            editCategorySelect.append(optionHTML);
+            filterCategorySelect.append(optionHTML);
+          });
+
+        console.log("Both dropdowns populated with categories");
+      }
+
+      function populateCategoriesInModal(modalType) {
+        const categorySelect =
+          modalType === "edit" ? $("#editCategory") : $("#addCategory");
+        categorySelect.empty();
+
+        Array.from(categories)
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach((category) => {
+            categorySelect.append(
+              `<option value="${category._id}">${category.name}</option>`
+            );
+          });
+      }
+
+      // Toggle offer options in edit modal
+      function toggleOfferOptions() {
+        if ($("#editActiveOffer").is(":checked")) {
+          $("#offerOptions").removeClass("d-none");
+        } else {
+          $("#offerOptions").addClass("d-none");
+        }
+      }
+
+      // Toggle offer options in add modal
+      function toggleAddOfferOptions() {
+        if ($("#addActiveOffer").is(":checked")) {
+          $("#addOfferOptions").removeClass("d-none");
+        } else {
+          $("#addOfferOptions").addClass("d-none");
+        }
+      }
+
+      // Show grid view
+      function showGridView() {
+        $("#gridView").removeClass("d-none");
+        $("#tableView").addClass("d-none");
+        $("#gridViewBtn").addClass("active");
+        $("#tableViewBtn").removeClass("active");
+      }
+
+      // Show table view
+      function showTableView() {
+        $("#tableView").removeClass("d-none");
+        $("#gridView").addClass("d-none");
+        $("#tableViewBtn").addClass("active");
+        $("#gridViewBtn").removeClass("active");
+      }
+
+      function openEditModal(productId) {
+        const product = allProducts.find((p) => p._id === productId);
+
+        if (product) {
+          $("#editProductId").val(productId);
+          $("#editName").val(product.name);
+          $("#editPrice").val(product.price);
+          $("#editStock").val(product.stock);
+          $("#editUnit").val(product.unit);
+          $("#editSku").val(product.sku);
+          $("#editDescription").val(product.description || "");
+
+          // Populate and set category
+          populateCategoriesInModal("edit");
+          if (product.category && product.category._id) {
+            $("#editCategory").val(product.category._id);
+          }
+
+          // Image
+          if (product.images && product.images.length > 0) {
+            $("#editImagePreview").attr("src", product.images[0]);
+            $("#editImageUrl").val(product.images[0]);
+          } else {
+            $("#editImagePreview").attr("src", "/api/placeholder/200/200");
+            $("#editImageUrl").val("");
+          }
+
+          // Offer
+          $("#editActiveOffer").prop("checked", product.hasActiveOffer);
+          if (product.hasActiveOffer) {
+            $("#editDiscountPercent").val(
+              product.exclusiveOffer.discountPercent || 0
+            );
+
+            if (product.exclusiveOffer.validUntil) {
+              const validUntil = new Date(product.exclusiveOffer.validUntil);
+              $("#editValidUntil").val(validUntil.toISOString().slice(0, 16));
+            } else {
+              $("#editValidUntil").val("");
+            }
+
+            $("#editBadgeText").val(
+              product.exclusiveOffer.badgeText || "Exclusive Offer"
+            );
+            $("#offerOptions").removeClass("d-none");
+          } else {
+            $("#offerOptions").addClass("d-none");
+          }
+
+          $("#editProductModal").modal("show");
+        }
+      }
+
+      // Open delete modal
+      function openDeleteModal(productId, productName, productSku) {
+        $("#deleteProductName").text(productName);
+        $("#deleteProductSku").text(productSku);
+        $("#confirmDeleteBtn").data("id", productId);
+        $("#deleteModal").modal("show");
+      }
+
+      // Save edited product
+      function saveProduct() {
+        const productId = $("#editProductId").val();
+        const hasActiveOffer = $("#editActiveOffer").is(":checked");
+
+        // Gather the data from the form
+        const productData = {
+          name: $("#editName").val(),
+          price: parseFloat($("#editPrice").val()),
+          categoryId: $("#editCategory").val(),
+          brand: $("#editBrand").val(),
+          description: $("#editDescription").val(),
+          stock: parseInt($("#editStock").val()),
+          unit: $("#editUnit").val(),
+          sku: $("#editSku").val(),
+          images: [$("#editImageUrl").val()],
+          exclusiveOffer: {
+            isActive: hasActiveOffer,
+            discountPercent: hasActiveOffer
+              ? parseInt($("#editDiscountPercent").val() || 0)
+              : 0,
+            originalPrice: parseFloat($("#editPrice").val()),
+            validUntil: hasActiveOffer ? $("#editValidUntil").val() : null,
+            badgeText: hasActiveOffer
+              ? $("#editBadgeText").val()
+              : "Exclusive Offer",
+          },
+        };
+
+        // Calculate the current price considering the offer
+        if (hasActiveOffer && productData.exclusiveOffer.discountPercent > 0) {
+          productData.currentPrice =
+            productData.price *
+            (1 - productData.exclusiveOffer.discountPercent / 100);
+        } else {
+          productData.currentPrice = productData.price;
+        }
+
+        // Send a PUT request to update the product
+        $.ajax({
+          url: `${apiUrl}/${productId}`, // Backend URL for updating product
+          type: "PUT",
+          data: JSON.stringify(productData),
+          contentType: "application/json", // Specify that the content is JSON
+          success: function (response) {
+            if (response.success) {
+              // Update local data if necessary
+              const index = allProducts.findIndex((p) => p._id === productId);
+              if (index !== -1) {
+                allProducts[index] = {
+                  ...allProducts[index],
+                  ...productData,
+                  hasActiveOffer: hasActiveOffer,
+                };
+              }
+
+              // Close modal and refresh the UI
+              $("#editProductModal").modal("hide");
+              filterProducts(); // Call this to refresh the product list after update
+              showToast("Product updated successfully", "bg-success");
+            } else {
+              showToast("Error updating product", "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Failed to update product", "bg-danger");
+          },
+        });
+      }
+
+      // Add new product
+      function addNewProduct() {
+        const hasActiveOffer = $("#addActiveOffer").is(":checked");
+        const price = parseFloat($("#addPrice").val());
+
+        const productData = {
+          name: $("#addName").val(),
+          price: price,
+          stock: parseInt($("#addStock").val()),
+          unit: $("#addUnit").val(),
+          sku: $("#addSku").val(),
+          description: $("#addDescription").val(),
+          category: {
+            name: $("#addCategory").val(),
+          },
+          images: [$("#addImageUrl").val() || "/api/placeholder/200/200"],
+          exclusiveOffer: {
+            isActive: hasActiveOffer,
+            discountPercent: hasActiveOffer
+              ? parseInt($("#addDiscountPercent").val() || 0)
+              : 0,
+            originalPrice: price,
+            validUntil: hasActiveOffer ? $("#addValidUntil").val() : null,
+            badgeText: hasActiveOffer
+              ? $("#addBadgeText").val()
+              : "Exclusive Offer",
+          },
+        };
+
+        // Calculate current price
+        if (hasActiveOffer && productData.exclusiveOffer.discountPercent > 0) {
+          productData.currentPrice =
+            price * (1 - productData.exclusiveOffer.discountPercent / 100);
+        } else {
+          productData.currentPrice = price;
+        }
+
+        // Add product via API
+        $.ajax({
+          url: apiUrl,
+          type: "POST",
+          data: JSON.stringify(productData),
+          contentType: "application/json",
+          success: function (response) {
+            if (response.success) {
+              // Add to local data
+              const newProduct = {
+                ...productData,
+                _id: response.product._id,
+                hasActiveOffer: hasActiveOffer,
+              };
+              allProducts.push(newProduct);
+
+              // Close modal and refresh
+              $("#addProductModal").modal("hide");
+              filterProducts();
+              updateStats();
+              showToast("Product added successfully", "bg-success");
+            } else {
+              showToast("Error adding product", "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Failed to add product", "bg-danger");
+          },
+        });
+      }
+
+      // Delete product
+      function deleteProduct() {
+        const productId = $("#confirmDeleteBtn").data("id");
+
+        $.ajax({
+          url: `${apiUrl}/${productId}`,
+          type: "DELETE",
+          success: function (response) {
+            if (response.success) {
+              // Remove from local data
+              allProducts = allProducts.filter((p) => p._id !== productId);
+
+              // Close modal and refresh
+              $("#deleteModal").modal("hide");
+              filterProducts();
+              updateStats();
+              showToast("Product deleted successfully", "bg-success");
+            } else {
+              showToast("Error deleting product", "bg-danger");
+            }
+          },
+          error: function () {
+            showToast("Failed to delete product", "bg-danger");
+          },
+        });
+      }
+
+      // Update dashboard stats
+      function updateStats(totalProducts) {
+        $("#totalProducts").text(totalProducts);
+
+        const activeOffers = allProducts.filter((p) => p.hasActiveOffer).length;
+        $("#activeOffers").text(activeOffers);
+
+        const lowStockItems = allProducts.filter((p) => p.stock <= 20).length;
+        $("#lowStock").text(lowStockItems);
+
+        $("#categories").text(categories.size);
+      }
+
+      // Show toast notification
+      function showToast(message, bgClass) {
+        const toast = $("#toastNotification");
+
+        // Set message and background
+        $("#toastMessage").text(message);
+        toast
+          .removeClass("bg-success bg-danger bg-warning bg-info")
+          .addClass(bgClass);
+
+        // Create bootstrap toast instance and show
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+      }
+
+      // Handle image loading errors
+      $(document).on("error", "img", function () {
+        $(this).attr("src", "/api/placeholder/200/200");
+      });
+    </script>
+  </body>
+</html>

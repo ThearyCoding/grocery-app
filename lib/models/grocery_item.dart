@@ -97,3 +97,15 @@ var beverages = [
       price: 4.99,
       imagePath: "assets/images/beverages_images/pepsi.png"),
 ];
+
+class GroceryFeaturedItem {
+  final String name;
+  final String imagePath;
+
+  GroceryFeaturedItem(this.name, this.imagePath);
+}
+
+var groceryFeaturedItems = [
+  GroceryFeaturedItem("Pulses", "assets/images/pulses.png"),
+  GroceryFeaturedItem("Rise", "assets/images/rise.png"),
+];

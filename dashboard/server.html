@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grocery Product Management</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- CryptoJS for signatures -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- ImageKit SDK -->
+    <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
+    <style>
+      .image-preview {
+        max-width: 150px;
+        max-height: 150px;
+        margin: 10px 0;
+        display: none;
+      }
+      .form-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+      }
+      .form-section h5 {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #dee2e6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+              <h3 class="mb-0">Add New Grocery Product</h3>
+            </div>
+            <div class="card-body">
+              <form id="productForm">
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                  <h5>
+                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                  </h5>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="name" class="form-label">Product Name*</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="category" class="form-label">Category*</label>
+                      <select class="form-select" id="category" required>
+                        <option value="">Select Category</option>
+                        <!-- Categories will be loaded dynamically -->
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="brand" class="form-label">Brand</label>
+                      <input type="text" class="form-control" id="brand" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="sku" class="form-label">SKU*</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="sku"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="description" class="form-label"
+                      >Description</label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Pricing & Inventory Section -->
+                <div class="form-section">
+                  <h5><i class="fas fa-tag me-2"></i>Pricing & Inventory</h5>
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label for="price" class="form-label">Price*</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="price"
+                          step="0.01"
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="stock" class="form-label">Stock*</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="stock"
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="unit" class="form-label">Unit*</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="unit"
+                        placeholder="e.g., 0.3kg, 1lb"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="sold" class="form-label">Sold Count</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="sold"
+                        min="0"
+                        value="0"
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="rating" class="form-label"
+                        >Initial Rating</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="rating"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        value="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Images Section -->
+                <div class="form-section">
+                  <h5><i class="fas fa-images me-2"></i>Product Images</h5>
+                  <div class="mb-3">
+                    <label for="images" class="form-label"
+                      >Upload Images*</label
+                    >
+                    <input
+                      class="form-control"
+                      type="file"
+                      id="images"
+                      multiple
+                      accept="image/*"
+                    />
+                    <small class="text-muted"
+                      >You can upload multiple images</small
+                    >
+                  </div>
+                  <div id="imagePreviews" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Exclusive Offer Section -->
+                <div class="form-section">
+                  <h5><i class="fas fa-percentage me-2"></i>Exclusive Offer</h5>
+                  <div class="form-check form-switch mb-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="isExclusiveOffer"
+                    />
+                    <label class="form-check-label" for="isExclusiveOffer"
+                      >Enable Exclusive Offer</label
+                    >
+                  </div>
+                  <div id="offerFields" style="display: none">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="discountPercent" class="form-label"
+                          >Discount Percentage</label
+                        >
+                        <div class="input-group">
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="discountPercent"
+                            min="0"
+                            max="100"
+                            value="0"
+                          />
+                          <span class="input-group-text">%</span>
+                        </div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="badgeText" class="form-label"
+                          >Badge Text</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="badgeText"
+                          value="Exclusive Offer"
+                        />
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="validUntil" class="form-label"
+                          >Valid Until</label
+                        >
+                        <input
+                          type="datetime-local"
+                          class="form-control"
+                          id="validUntil"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status Section -->
+                <div class="form-section">
+                  <h5><i class="fas fa-toggle-on me-2"></i>Status</h5>
+                  <div class="form-check form-switch mb-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="isActive"
+                      checked
+                    />
+                    <label class="form-check-label" for="isActive"
+                      >Active Product</label
+                    >
+                  </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    <span id="submitText">Save Product</span>
+                    <span
+                      id="loadingSpinner"
+                      class="spinner-border spinner-border-sm ms-2"
+                      role="status"
+                      aria-hidden="true"
+                      style="display: none"
+                    ></span>
+                  </button>
+                </div>
+              </form>
+              <div id="status" class="mt-3 alert" style="display: none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // Initialize ImageKit
+        const imagekit = new ImageKit({
+          publicKey: "public_OVFquINe2qZs14SIleNB0c6mR10=",
+          urlEndpoint: "https://ik.imagekit.io/tlyt9zxe4",
+        });
+
+        // Sample categories
+        const categories = [
+          { _id: "67eaa224fd09e71013acc61c", name: "Seafood" },
+          {
+            _id: "67ef429b1c0c38bfe8e72635",
+            name: "Fresh Fruits & Vegetables",
+          },
+          { _id: "67ef42cb1c0c38bfe8e72638", name: "Cooking Oil" },
+          { _id: "67ef42ee1c0c38bfe8e7263b", name: "Meat & Fish" },
+          { _id: "67ef43141c0c38bfe8e7263e", name: "Bakery & Snacks" },
+          { _id: "67ef43451c0c38bfe8e72641", name: "Dairy & Eggs" },
+          { _id: "67ef43601c0c38bfe8e72644", name: "Beverages" },
+          {_id: "680b583af3c6598af80db3ba", name: "Chocolates & Sweets"}
+        ];
+
+        // Populate categories dropdown
+        categories.forEach((category) => {
+          $("#category").append(
+            `<option value="${category._id}">${category.name}</option>`
+          );
+        });
+
+        // Toggle exclusive offer fields
+        $("#isExclusiveOffer").change(function () {
+          $("#offerFields").toggle(this.checked);
+        });
+
+        // Handle image previews
+        $("#images").change(function () {
+          $("#imagePreviews").empty();
+          const files = this.files;
+
+          for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              $("#imagePreviews").append(`
+                            <div class="position-relative" style="width: 150px;">
+                                <img src="${e.target.result}" class="img-thumbnail image-preview" style="display: block;">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="$(this).parent().remove()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `);
+            };
+            reader.readAsDataURL(files[i]);
+          }
+        });
+
+        // Form submission handler
+        $("#productForm").submit(async function (e) {
+          e.preventDefault();
+
+          const status = $("#status");
+          status.hide().removeClass("alert-success alert-danger");
+
+          // Show loading state
+          $("#submitText").text("Saving...");
+          $("#loadingSpinner").show();
+
+          try {
+            // Get form values
+            const name = $("#name").val();
+            const category = $("#category").val();
+            const brand = $("#brand").val();
+            const sku = $("#sku").val();
+            const description = $("#description").val();
+            const price = parseFloat($("#price").val());
+            const stock = parseInt($("#stock").val());
+            const unit = $("#unit").val();
+            const sold = parseInt($("#sold").val()) || 0;
+            const rating = parseFloat($("#rating").val()) || 0;
+            const isActive = $("#isActive").is(":checked");
+            const imageFiles = $("#images")[0].files;
+
+            // Validate required fields
+            if (!name || !category || !sku || !price || !unit || !stock) {
+              throw new Error("Please fill all required fields");
+            }
+
+            if (!imageFiles || imageFiles.length === 0) {
+              throw new Error("Please upload at least one image");
+            }
+
+            // Prepare exclusive offer data
+            const exclusiveOffer = {
+              isActive: $("#isExclusiveOffer").is(":checked"),
+              discountPercent: $("#isExclusiveOffer").is(":checked")
+                ? parseInt($("#discountPercent").val())
+                : 0,
+              badgeText: $("#isExclusiveOffer").is(":checked")
+                ? $("#badgeText").val()
+                : "Exclusive Offer",
+              validUntil: $("#isExclusiveOffer").is(":checked")
+                ? new Date($("#validUntil").val()).toISOString()
+                : null,
+            };
+
+            // Validate exclusive offer
+            if (exclusiveOffer.isActive) {
+              if (
+                exclusiveOffer.discountPercent < 0 ||
+                exclusiveOffer.discountPercent > 100
+              ) {
+                throw new Error(
+                  "Discount percentage must be between 0 and 100"
+                );
+              }
+
+              if (
+                exclusiveOffer.validUntil &&
+                new Date(exclusiveOffer.validUntil) <= new Date()
+              ) {
+                throw new Error("Valid Until date must be in the future");
+              }
+            }
+
+            // Upload images to ImageKit
+            status.text("Uploading images...").addClass("alert-info").show();
+
+            const uploadedImages = [];
+            for (let i = 0; i < imageFiles.length; i++) {
+              const authParams = generateAuthParams();
+              const imageResponse = await imagekit.upload({
+                file: imageFiles[i],
+                fileName: `${name
+                  .replace(/\s+/g, "-")
+                  .toLowerCase()}-${Date.now()}-${i}`,
+                useUniqueFileName: true,
+                token: authParams.token,
+                expire: authParams.expire,
+                signature: authParams.signature,
+              });
+              uploadedImages.push(imageResponse.url);
+            }
+
+            // Prepare product data
+            const productData = {
+              name,
+              category,
+              brand: brand || null,
+              sku,
+              description,
+              price,
+              stock,
+              unit,
+              sold,
+              rating,
+              isActive,
+              images: uploadedImages,
+              exclusiveOffer,
+            };
+
+            // Send to your API
+            status
+              .text("Saving product information...")
+              .addClass("alert-info")
+              .show();
+
+            const apiResponse = await fetch(
+              "https://grocery-api-s552.onrender.com/api/products",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(productData),
+              }
+            );
+
+            if (!apiResponse.ok) {
+              const errorData = await apiResponse.json();
+              throw new Error(
+                errorData.message ||
+                  `API request failed with status ${apiResponse.status}`
+              );
+            }
+
+            const result = await apiResponse.json();
+            console.log("API response:", result);
+
+            // Success message
+            status
+              .text("Product created successfully!")
+              .addClass("alert-success")
+              .show();
+
+            // Reset form
+            $("#productForm")[0].reset();
+            $("#imagePreviews").empty();
+          } catch (error) {
+            console.error("Error:", error);
+            status
+              .text(`Error: ${error.message}`)
+              .addClass("alert-danger")
+              .show();
+          } finally {
+            // Hide loading state
+            $("#submitText").text("Save Product");
+            $("#loadingSpinner").hide();
+          }
+        });
+
+        // Generate authentication parameters for ImageKit
+        function generateAuthParams() {
+          // WARNING: This exposes your private key in client-side code
+          // In production, you should generate these parameters server-side
+          const privateKey = "private_+9U5q1K2wpLCrNoBci4PbhJ7QqY=";
+
+          // Generate random token
+          const token = Array.from(
+            crypto
+              .getRandomValues(new Uint8Array(16))
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("")
+          );
+
+          // Set expiration to 55 minutes from now
+          const expire = Math.floor(Date.now() / 1000) + 55 * 60;
+
+          // Calculate HMAC-SHA1 signature
+          const signature = CryptoJS.HmacSHA1(
+            token + expire,
+            privateKey
+          ).toString();
+
+          return { token, expire, signature };
+        }
+      });
+    </script>
+  </body>
+</html>
