@@ -101,8 +101,10 @@ class _AuthPageState extends State<AuthPage> {
                           borderRadius: BorderRadius.circular(17))),
                   onPressed: () async {
                     await authController.logOut();
-                    await authController.loginWithGoogle();
-                    Get.off(MainPage());
+                    final success = await authController.loginWithGoogle();
+                    if (success) {
+                      Get.off(MainPage());
+                    }
                   },
                   label: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),

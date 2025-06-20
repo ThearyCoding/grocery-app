@@ -20,6 +20,7 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     final authController = Get.put(AuthController());
     return Scaffold(
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(

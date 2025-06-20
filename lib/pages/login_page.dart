@@ -19,8 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final authController = Get.put(AuthController());
     return Scaffold(
+      appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: SingleChildScrollView(
           clipBehavior: Clip.antiAlias,
           child: SizedBox(

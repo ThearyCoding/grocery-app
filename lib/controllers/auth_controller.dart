@@ -31,13 +31,44 @@ class AuthController extends GetxController {
     await _tokenStorage.clearToken();
   }
 
-  Future<void> loginWithGoogle() async {
-    isLoading(true);
-    final GoogleSignInAccount? user =
-        await _googleSignInService.signInWithGoogle();
-    final GoogleSignInAuthentication auth = await user!.authentication;
-    final idToken = auth.idToken;
-    await _authApi.loginWithGoogle(idToken ?? "");
-    isLoading(false);
+  Future<bool> loginWithGoogle() async {
+    if (GetPlatform.isMobile || GetPlatform.isWeb) {
+      try {
+        isLoading(true);
+
+        final GoogleSignInAccount? user =
+            await _googleSignInService.signInWithGoogle();
+
+        if (user == null) {
+          Get.snackbar("Login Cancelled", "User cancelled Google Sign-In.");
+          return false;
+        }
+
+        final GoogleSignInAuthentication auth = await user.authentication;
+        final idToken = auth.idToken;
+
+        if (idToken == null) {
+          Get.snackbar("Login Failed", "Google token is null.");
+          return false;
+        }
+
+        await _authApi.loginWithGoogle(idToken);
+        return true;
+      } catch (e) {
+        Get.snackbar("Login Error", e.toString());
+        return false;
+      } finally {
+        isLoading(false);
+      }
+    } else {
+      String platformName = GetPlatform.isLinux
+          ? "Linux"
+          : GetPlatform.isWindows
+              ? "Windows"
+              : "This platform";
+
+      Get.snackbar("Error", "$platformName is not supported for Google Login.");
+      return false;
+    }
   }
 }

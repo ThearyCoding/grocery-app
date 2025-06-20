@@ -150,26 +150,29 @@ class _FavoritePageState extends State<FavoritePage> {
                       ],
                     ),
                   )),
-        bottomSheet: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    "Add all to cart",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600),
-                  ))),
-        ));
+        bottomSheet: Obx(() => _wishlistController.isLoading.isTrue ||
+                _wishlistController.wishlist.value.items.isEmpty
+            ? SizedBox()
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: SizedBox(
+                    width: double.infinity,
+                    height: 60,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          "Add all to cart",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
+                        ))),
+              )));
   }
 }

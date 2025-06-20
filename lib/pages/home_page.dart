@@ -4,6 +4,7 @@ import 'package:grocery_app/controllers/product_controller.dart';
 import 'package:grocery_app/core/app_colors.dart';
 import 'package:grocery_app/models/category.dart';
 import 'package:grocery_app/models/product.dart';
+import 'package:grocery_app/pages/search_sort_page.dart';
 import 'package:grocery_app/widgets/grocery_card_item_widget.dart';
 import 'package:grocery_app/widgets/loading-widget/loading_card_widget.dart';
 import 'package:grocery_app/widgets/loading-widget/loading_feature_widget.dart';
@@ -47,7 +48,9 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       height: 15,
                     ),
-                    SearchWidget(),
+                    GestureDetector(
+                      onTap: () => Get.to(SearchSortPage()),
+                      child: SearchWidget()),
                     _bannerWidget(),
                     SizedBox(
                       height: 5,

@@ -36,199 +36,220 @@ class _CartPageState extends State<CartPage> {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ListView.separated(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final Item item =
-                                cartController.cart.value.items[index];
-                            final totalPrice = (item.quantity ?? 0) *
-                                item.product!.price!.toDouble();
-                            return GestureDetector(
-                              onTap: () => Get.to(
-                                  () => DetailProductPage(
-                                      productId: item.product!.id ?? ""),
-                                  transition: Transition.downToUp),
-                              child: Container(
-                                width: double.infinity,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                                padding: EdgeInsets.all(20),
-                                child: Row(
-                                  children: [
-                                    Image.network(
-                                      item.product!.images.first,
-                                      width: 90,
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Row(
+              : cartController.cart.value.items.isEmpty
+                  ? Center(
+                      child: Text("Your cart is empty."),
+                    )
+                  : SingleChildScrollView(
+                    child: Column(
+                        children: [
+                          ListView.separated(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final Item item =
+                                    cartController.cart.value.items[index];
+                                final totalPrice = (item.quantity ?? 0) *
+                                    item.product!.price!.toDouble();
+                                return GestureDetector(
+                                  onTap: () => Get.to(
+                                      () => DetailProductPage(
+                                          productId: item.product!.id ?? ""),
+                                      transition: Transition.downToUp),
+                                  child: Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                            0.2,
+                                    padding: EdgeInsets.all(20),
+                                    child: Row(
+                                      children: [
+                                        Image.network(
+                                          item.product!.images.first,
+                                          width: 90,
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  item.product!.name ??
-                                                      "no name provided",
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
-                                                ),
-                                              ),
-                                              IconButton(
-                                                  onPressed: () {
-                                                    cartController.removeItem(
-                                                        productId:
-                                                            item.product!.id ??
-                                                                "");
-                                                  },
-                                                  icon: Icon(Icons.close))
-                                            ],
-                                          ),
-                                          Text(item.product!.unit.toString()),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.center,
                                             children: [
                                               Row(
-                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      cartController
-                                                          .updateQuantity(
-                                                              productId: item
-                                                                      .product!
-                                                                      .id ??
-                                                                  "",
-                                                              quantity: -1);
-                                                    },
-                                                    child: Container(
-                                                      width: 45,
-                                                      height: 45,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(18),
-                                                          border: Border.all(
-                                                              color: Color(
-                                                                  0xffE2E2E2))),
-                                                      child: Icon(Icons.remove),
+                                                  Expanded(
+                                                    child: Text(
+                                                      item.product!.name ??
+                                                          "no name provided",
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow
+                                                          .ellipsis,
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16),
                                                     ),
                                                   ),
-                                                  SizedBox(
-                                                    width: 20,
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        cartController.removeItem(
+                                                            productId: item
+                                                                    .product!
+                                                                    .id ??
+                                                                "");
+                                                      },
+                                                      icon: Icon(Icons.close))
+                                                ],
+                                              ),
+                                              Text(item.product!.unit
+                                                  .toString()),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          cartController
+                                                              .updateQuantity(
+                                                                  productId: item
+                                                                          .product!
+                                                                          .id ??
+                                                                      "",
+                                                                  quantity:
+                                                                      -1);
+                                                        },
+                                                        child: Container(
+                                                          width: 45,
+                                                          height: 45,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18),
+                                                              border: Border.all(
+                                                                  color: Color(
+                                                                      0xffE2E2E2))),
+                                                          child: Icon(
+                                                              Icons.remove),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      Text(item.quantity
+                                                          .toString()),
+                                                      SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          cartController
+                                                              .updateQuantity(
+                                                                  productId: item
+                                                                          .product!
+                                                                          .id ??
+                                                                      "",
+                                                                  quantity:
+                                                                      1);
+                                                        },
+                                                        child: Container(
+                                                          width: 45,
+                                                          height: 45,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18),
+                                                              border: Border.all(
+                                                                  color: Color(
+                                                                      0xffE2E2E2))),
+                                                          child:
+                                                              Icon(Icons.add),
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
-                                                  Text(
-                                                      item.quantity.toString()),
-                                                  SizedBox(
-                                                    width: 20,
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      cartController
-                                                          .updateQuantity(
-                                                              productId: item
-                                                                      .product!
-                                                                      .id ??
-                                                                  "",
-                                                              quantity: 1);
-                                                    },
-                                                    child: Container(
-                                                      width: 45,
-                                                      height: 45,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(18),
-                                                          border: Border.all(
-                                                              color: Color(
-                                                                  0xffE2E2E2))),
-                                                      child: Icon(Icons.add),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 15),
+                                                    child: Text(
+                                                      "\$${totalPrice.toStringAsFixed(2)}",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight
+                                                                  .bold),
                                                     ),
                                                   )
                                                 ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 15),
-                                                child: Text(
-                                                  "\$${totalPrice.toStringAsFixed(2)}",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
                                               )
                                             ],
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (_, index) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Divider(),
-                              ),
-                          itemCount: cartController.cart.value.items.length),
-                    ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, index) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    child: Divider(),
+                                  ),
+                              itemCount:
+                                  cartController.cart.value.items.length),
+                        ],
+                      ),
                   ),
-                ),
         ),
-        bottomSheet: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ElevatedButton.icon(
-            iconAlignment: IconAlignment.end,
-            icon: Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.green.shade600),
-                child: Text(
-                  "\$35.35",
-                  style: TextStyle(
-                    color: Colors.white,
+        bottomSheet: Obx(() => cartController.isLoading.isTrue ||
+                cartController.cart.value.items.isEmpty
+            ? SizedBox()
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ElevatedButton.icon(
+                  iconAlignment: IconAlignment.end,
+                  icon: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.green.shade600),
+                      child: Text(
+                        "\$35.35",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      )),
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 60),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      backgroundColor: AppColors.primaryColor),
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => CheckoutPage())),
+                  label: Text(
+                    "Go to checkout",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600),
                   ),
-                )),
-            style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 60),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
                 ),
-                backgroundColor: AppColors.primaryColor),
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => CheckoutPage())),
-            label: Text(
-              "Go to checkout",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ));
+              )));
   }
 }
