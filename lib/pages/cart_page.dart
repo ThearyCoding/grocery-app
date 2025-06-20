@@ -15,11 +15,11 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final cartController = Get.put(CartController());
-  @override
-  void initState() {
-    super.initState();
-    cartController.fetchCart();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   cartController.fetchCart();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +81,12 @@ class _CartPageState extends State<CartPage> {
                                                 child: Text(
                                                   item.product!.name ??
                                                       "no name provided",
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 16),
                                                 ),
                                               ),

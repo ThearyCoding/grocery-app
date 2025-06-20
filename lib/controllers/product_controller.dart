@@ -21,31 +21,37 @@ class ProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchProductExclusive();
-    fetchProductsBestSelling();
-    fetchProductNewest();
+
+    Future.wait([
+      fetchProductExclusive(),
+      fetchProductsBestSelling(),
+      fetchProductNewest(),
+    ]);
   }
 
-  Future<void> searchSuggestion({required String productName}) async{
+  Future<void> searchSuggestion({required String productName}) async {
     isLoadingSuggestion(true);
     final data = await _productApi.searchSuggestion(productName: productName);
 
     suggestions.assignAll(data);
     isLoadingSuggestion(false);
   }
-  Future<void> fetchProductByCategory({required String categoryId}) async{
+
+  Future<void> fetchProductByCategory({required String categoryId}) async {
     isLoadingCategory(true);
-    final data = await _productApi.fetchProductByCategory(categoryId: categoryId);
+    final data =
+        await _productApi.fetchProductByCategory(categoryId: categoryId);
     products.assignAll(data);
     isLoadingCategory(false);
   }
-  Future<void> fetchSingleProduct({required String productId}) async{
- isLoadingDetail(true);
-     final proData = await _productApi.fetchSingleProduct(productId: productId);
+
+  Future<void> fetchSingleProduct({required String productId}) async {
+    isLoadingDetail(true);
+    final proData = await _productApi.fetchSingleProduct(productId: productId);
     product.value = proData;
     isLoadingDetail(false);
-
   }
+
   Future<void> fetchProductExclusive() async {
     try {
       isLoadingExclusive(true);

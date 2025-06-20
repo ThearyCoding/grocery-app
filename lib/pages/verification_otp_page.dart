@@ -23,14 +23,7 @@ class _VerificationOtpPageState extends State<VerificationOtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                size: 20,
-              )),
-        ),
+        appBar: AppBar(),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -81,13 +74,15 @@ class _VerificationOtpPageState extends State<VerificationOtpPage> {
                       decoration: InputDecoration(
                         counterText: "",
                         focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide(
-                          color: AppColors.primaryColor,
-                        )),
+                              color: AppColors.primaryColor,
+                            )),
                         enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide(
-                          color: Colors.black,
-                        )),
+                              color: Colors.black,
+                            )),
                         border: OutlineInputBorder(
                             borderSide: BorderSide(
                           color: Colors.black,

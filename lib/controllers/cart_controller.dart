@@ -4,6 +4,14 @@ import 'package:grocery_app/models/cart.dart';
 import 'package:grocery_app/services/apis/cart_api.dart';
 
 class CartController extends GetxController {
+
+
+  @override
+  onInit(){
+    super.onInit();
+
+    fetchCart();
+  }
   final _cartApi = CartApi();
   Rx<Cart> cart = Cart.empty().obs;
   final isLoading = false.obs;
