@@ -49,8 +49,8 @@ class _HomePageState extends State<HomePage> {
                       height: 15,
                     ),
                     GestureDetector(
-                      onTap: () => Get.to(SearchSortPage()),
-                      child: SearchWidget()),
+                        onTap: () => Get.to(SearchSortPage()),
+                        child: SearchWidget()),
                     _bannerWidget(),
                     SizedBox(
                       height: 5,
@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 'Fresh Vegatables',
                 style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 18,
                     color: Colors.black,
                     fontWeight: FontWeight.bold),
               ),
@@ -191,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.w600),
               )
             ],
-          )
+          ),
         ],
       ),
     );

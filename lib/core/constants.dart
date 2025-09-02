@@ -1,3 +1,3 @@
 class AppConstants{
-  static const baseUrl = "https://grocery-api-s552.onrender.com/api";
+  static const baseUrl = "http://localhost:3000/api";
 }

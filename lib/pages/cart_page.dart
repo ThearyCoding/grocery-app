@@ -15,11 +15,11 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final cartController = Get.put(CartController());
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   cartController.fetchCart();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    cartController.fetchCart();
+  }
 
   @override
   Widget build(BuildContext context) {

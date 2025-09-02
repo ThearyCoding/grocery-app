@@ -29,6 +29,8 @@ dependencies:
   location: ^8.0.0
   google_maps_webservice:
     git: https://github.com/danpraise4/google_maps_webservice.git
+  iconly: ^1.0.1
+  intl: ^0.20.2
 
 
 dependency_overrides:

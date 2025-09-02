@@ -5,6 +5,7 @@ import 'package:grocery_app/controllers/auth_controller.dart';
 import 'package:grocery_app/controllers/user_controller.dart';
 import 'package:grocery_app/core/app_colors.dart';
 import 'package:grocery_app/pages/auth_page.dart';
+import 'package:grocery_app/pages/my_order_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -61,9 +62,9 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(
-        () => Column(
+        () => ListView(
           children: [
             Padding(
               padding: EdgeInsets.only(
@@ -141,6 +142,26 @@ class _AccountPageState extends State<AccountPage> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (_, index) {
                   return ListTile(
+                    onTap: () {
+                      if (index == 0) {
+                        Get.to(() => MyOrderPage());
+                        // orders
+                      } else if (index == 1) {
+                        // details
+                      } else if (index == 2) {
+                        // delivery address
+                      } else if (index == 3) {
+                        // payment methods
+                      } else if (index == 4) {
+                        // promo code
+                      } else if (index == 5) {
+                        // notifications
+                      } else if (index == 6) {
+                        // help
+                      } else if (index == 7) {
+                        // about
+                      }
+                    },
                     leading:
                         SvgPicture.asset(accountItems[index]['imagePath']!),
                     title: Text(

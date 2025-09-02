@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:grocery_app/pages/main_page.dart';
@@ -26,7 +25,6 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> checkIsLogined() async {
     final token = await _tokenStorage.getToken();
-    log(token.toString());
 
     if (token != null) {
       Get.off(() => MainPage());
@@ -48,12 +46,6 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
-      // builder: (context, child) {
-      //   return ScrollConfiguration(
-      //     behavior: const BouncingScrollBehavior(),
-      //     child: child!,
-      //   );
-      // },
       theme: ThemeData(
           fontFamily: 'Gilroy',
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -72,12 +64,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-/// BouncingScrollBehavior use for config scroll ios style
-class BouncingScrollBehavior extends ScrollBehavior {
-  const BouncingScrollBehavior();
 
-  @override
-  ScrollPhysics getScrollPhysics(BuildContext context) {
-    return const BouncingScrollPhysics();
-  }
-}
+
