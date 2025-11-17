@@ -5,19 +5,19 @@ class OrderDetailResponse {
     });
 
     final bool? success;
-    final Data? data;
+    final OrderData? data;
 
     factory OrderDetailResponse.fromJson(Map<String, dynamic> json){ 
         return OrderDetailResponse(
             success: json["success"],
-            data: json["data"] == null ? null : Data.fromJson(json["data"]),
+            data: json["data"] == null ? null : OrderData.fromJson(json["data"]),
         );
     }
 
 }
 
-class Data {
-    Data({
+class OrderData {
+    OrderData({
          this.id,
          this.createdAt,
          this.discount,
@@ -43,8 +43,8 @@ class Data {
     final String? orderStatus;
     final double? totalAmount;
 
-    factory Data.fromJson(Map<String, dynamic> json) {
-  return Data(
+    factory OrderData.fromJson(Map<String, dynamic> json) {
+  return OrderData(
     id: json["id"],
     createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
     discount: (json["discount"] as num?)?.toDouble(),

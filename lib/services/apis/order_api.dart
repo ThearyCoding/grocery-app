@@ -19,7 +19,7 @@ class OrderApi {
       );
 
       if (response.statusCode == 200) {
-        final dataJson = jsonDecode(response.body) as Map<String, dynamic>;
+        final dataJson = jsonDecode(response.body);
         return OrderResponse.fromJson(dataJson);
       } else {
         if (kDebugMode) {
@@ -32,7 +32,8 @@ class OrderApi {
     }
   }
 
-    Future<OrderDetailResponse> fetchOrderDetail({required String orderId}) async {
+  Future<OrderDetailResponse> fetchOrderDetail(
+      {required String orderId}) async {
     try {
       final token = await TokenStorage().getToken();
 
@@ -51,12 +52,10 @@ class OrderApi {
         return OrderDetailResponse();
       }
     } catch (e) {
-      if(kDebugMode){
+      if (kDebugMode) {
         print("Failed to load orders detail: $e");
       }
       return OrderDetailResponse();
     }
   }
-
-  
 }

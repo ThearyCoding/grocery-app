@@ -8,45 +8,46 @@ import 'package:grocery_app/services/apis/order_api.dart';
 class OrderController extends GetxController {
   final Rx<OrderResponse> orderResponse = Rx(OrderResponse());
   final Rx<OrderDetailResponse> orderDetailRes = Rx(OrderDetailResponse());
-  final RxList<Order> orders = <Order>[].obs;
   final isLoading = false.obs;
-
+  final errorText = RxnString();
 
   @override
   void onInit() {
     super.onInit();
-
     fetchOrders();
   }
 
   Future<void> fetchOrders() async {
     try {
+      errorText.value = null;
       isLoading.value = true;
+
       final ordersRes = await OrderApi().fetchOrders();
+
       orderResponse.value = ordersRes;
-      orders.value = ordersRes.data ?? [];
-      isLoading.value = false;
     } catch (e) {
+      errorText.value = 'Failed to load orders';
       if (kDebugMode) {
         print('Error fetching orders: $e');
       }
+    } finally {
       isLoading.value = false;
-      orderResponse.value = OrderResponse();
     }
   }
 
   Future<void> fetchOrderDetail({required String orderId}) async {
     try {
+      errorText.value = null;
       isLoading.value = true;
-      final ordersRes = await OrderApi().fetchOrderDetail(orderId: orderId);
-      orderDetailRes.value = ordersRes;
-      isLoading.value = false;
+      final res = await OrderApi().fetchOrderDetail(orderId: orderId);
+      orderDetailRes.value = res;
     } catch (e) {
+      errorText.value = 'Failed to load order detail';
       if (kDebugMode) {
         print('Error fetching orders: $e');
       }
+    } finally {
       isLoading.value = false;
-      orderResponse.value = OrderResponse();
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:grocery_app/controllers/auth_controller.dart';
 import 'package:grocery_app/controllers/user_controller.dart';
 import 'package:grocery_app/core/app_colors.dart';
+import 'package:grocery_app/pages/address_list_page.dart';
 import 'package:grocery_app/pages/auth_page.dart';
 import 'package:grocery_app/pages/my_order_page.dart';
 
@@ -150,6 +151,7 @@ class _AccountPageState extends State<AccountPage> {
                         // details
                       } else if (index == 2) {
                         // delivery address
+                        Get.to(() => AddressListPage());
                       } else if (index == 3) {
                         // payment methods
                       } else if (index == 4) {
@@ -174,6 +176,18 @@ class _AccountPageState extends State<AccountPage> {
                 },
                 separatorBuilder: (_, index) => Divider(),
                 itemCount: accountItems.length),
+            Divider(),
+            ListTile(
+              onTap: () {
+                _userController.showDialogChangeLanguages();
+              },
+              leading: Icon(Icons.language),
+              title: Text(
+                "Languages",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              trailing: Icon(Icons.arrow_forward_ios),
+            ),
             Divider(),
             SizedBox(
               height: 50,

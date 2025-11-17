@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:grocery_app/core/constants.dart';
 import 'package:grocery_app/models/cart.dart';
+import 'package:grocery_app/services/notification/notification_service.dart';
 import 'package:grocery_app/services/storages/token_storage.dart';
 import 'package:grocery_app/utils/snacbar_utils.dart';
 import 'package:http/http.dart' as http;
@@ -102,17 +103,24 @@ class CartApi {
 
       if (response.statusCode == 201) {
         dev.log(response.body);
-        SnacbarUtils.showSnacbar(title: "Success",message: jsonDecode(response.body)["message"]);
+        SnacbarUtils.showSnacbar(
+            title: "Success", message: jsonDecode(response.body)["message"]);
+        await NotificationService.createNotification(
+          payload: jsonEncode({
+            "id": jsonDecode(response.body)["orderId"],
+            "route_name": "/order_detail_page",
+          }),
+            body: "You have placed successfully", title: "Order Sucessfull");
         return jsonDecode(response.body)["success"] ?? false;
       } else {
         dev.log(response.body);
         SnacbarUtils.showSnacbar(
             message: jsonDecode(response.body)["message"], isError: true);
-                   return jsonDecode(response.body)["success"] ?? false;
+        return jsonDecode(response.body)["success"] ?? false;
       }
     } catch (e) {
       dev.log("error placing order: $e");
-          return false;
+      return false;
     }
   }
 

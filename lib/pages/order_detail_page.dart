@@ -17,7 +17,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   void initState() {
     super.initState();
-    final orderId = Get.arguments["orderId"] as String;
+    final orderId = Get.arguments["id"] as String;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       orderController.fetchOrderDetail(orderId: orderId);
     });
@@ -121,7 +121,7 @@ class _OrderItems extends StatelessWidget {
     required this.orderData,
   });
 
-  final Data? orderData;
+  final OrderData? orderData;
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +190,7 @@ class _DeliveryAddress extends StatelessWidget {
     required this.orderData,
   });
 
-  final Data? orderData;
+  final OrderData? orderData;
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +303,7 @@ class _OrderHeader extends StatelessWidget {
     required this.orderController,
   });
 
-  final Data? orderData;
+  final OrderData? orderData;
   final OrderController orderController;
 
   @override
@@ -335,7 +335,7 @@ class _OrderHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 color: orderController
                     .getStatusColor(orderData!.orderStatus ?? "")
-                    .withValues(alpha: 7),
+                    .withValues(alpha: 0.1),
                 border: Border.all(
                     color: orderController
                         .getStatusColor(orderData!.orderStatus ?? ""))),

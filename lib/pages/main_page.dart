@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grocery_app/core/app_colors.dart';
+import 'package:grocery_app/generated/l10n.dart';
 import 'package:grocery_app/pages/account_page.dart';
 import 'package:grocery_app/pages/cart_page.dart';
 import 'package:grocery_app/pages/explore_page.dart';
@@ -65,8 +66,8 @@ class _MainPageState extends State<MainPage> {
               ),
               unselectedItemColor: Colors.black,
               items: [
-                _buildNavItem('Shop', 'assets/icons/shop_icon.svg', 0, index),
-                _buildNavItem('Explore', 'assets/icons/explore_icon.svg', 1, index),
+                _buildNavItem(AppLocalizations.of(context).labelShop, 'assets/icons/shop_icon.svg', 0, index),
+                _buildNavItem(AppLocalizations.of(context).labelExplore, 'assets/icons/explore_icon.svg', 1, index),
                 _buildNavItem('Cart', 'assets/icons/cart_icon.svg', 2, index),
                 _buildNavItem('Favorite', 'assets/icons/favourite_icon.svg', 3, index),
                 _buildNavItem('Account', 'assets/icons/account_icon.svg', 4, index),

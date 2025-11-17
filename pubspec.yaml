@@ -31,6 +31,11 @@ dependencies:
     git: https://github.com/danpraise4/google_maps_webservice.git
   iconly: ^1.0.1
   intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
+  flutter_local_notifications: ^19.4.1
+  firebase_core: ^4.1.0
+  firebase_messaging: ^16.0.1
 
 
 dependency_overrides:
@@ -38,13 +43,14 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  intl_utils: ^2.8.11
   flutter_lints: ^5.0.0
+  build_runner: ^2.7.2
 
 
 
 flutter:
-
+  generate: true
   uses-material-design: true
 
   assets:
@@ -73,7 +79,9 @@ flutter:
     #     - asset: assets/fonts/Mulish/Mulish-SemiBold.ttf
     #       weight: 600
 
-
+flutter_intl:
+  enabled: true
+  class_name: AppLocalizations
 flutter_native_splash:
   color: "#53B176"
   image: assets/icons/ic_launcher_adaptive_fore.png
