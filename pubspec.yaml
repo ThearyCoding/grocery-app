@@ -36,6 +36,7 @@ dependencies:
   flutter_local_notifications: ^19.4.1
   firebase_core: ^4.1.0
   firebase_messaging: ^16.0.1
+  flutter_launcher_icons: ^0.14.4
 
 
 dependency_overrides:
@@ -91,3 +92,10 @@ flutter_native_splash:
 
   web: false
   
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_logo.png"
+
+  ios_content_mode: scaleAspectFill
+  remove_alpha_ios: true
