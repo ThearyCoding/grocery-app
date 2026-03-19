@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -19,46 +18,47 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   final WidgetsBinding instance = WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   FlutterNativeSplash.preserve(widgetsBinding: instance);
-  FlutterNativeSplash.remove();
-  if(!Platform.isIOS){
+
+  if (!Platform.isIOS) {
     await FcmService.init();
   }
   await NotificationService.init();
+
   Get.put(LocalizationController());
-  runApp(MyApp());
+
+  final tokenStorage = TokenStorage();
+  final token = await tokenStorage.getToken();
+
+  Widget initialPage;
+  if (token != null) {
+    initialPage = MainPage();
+  } else {
+    initialPage = WelcomePage();
+  }
+
+  FlutterNativeSplash.remove();
+
+  runApp(MyApp(initialPage: initialPage));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final Widget initialPage;
 
+  const MyApp({super.key, required this.initialPage});
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  final _tokenStorage = TokenStorage();
-
-  Future<void> checkIsLogined() async {
-    final token = await _tokenStorage.getToken();
-    if (kDebugMode) {
-      print("access token: $token");
-    }
-    if (token != null) {
-      Get.offAll(() => MainPage());
-    } else {
-      Get.offAll(() => WelcomePage());
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    checkIsLogined();
-
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage? message) {
@@ -103,15 +103,15 @@ class _MyAppState extends State<MyApp> {
           GetPage(name: "/order_detail_page", page: () => OrderDetailPage())
         ],
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
+        home: widget.initialPage,
         theme: ThemeData(
             fontFamily: 'Gilroy',
             visualDensity: VisualDensity.adaptivePlatformDensity,
             scaffoldBackgroundColor: Colors.white,
             appBarTheme: AppBarTheme(
-                scrolledUnderElevation: 0.0, elevation: 0, color: Colors.white),
+                scrolledUnderElevation: 0.0,
+                elevation: 0,
+                backgroundColor: Colors.white),
             inputDecorationTheme: InputDecorationTheme(
                 focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffE2E2E2))),
